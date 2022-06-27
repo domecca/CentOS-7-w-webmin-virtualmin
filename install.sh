@@ -1,41 +1,60 @@
-# Adds RPG & EPEL Repositories
-wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt
-,,,,,,,,,,,,,,,,,,,working here
-
-
 # checks for updates
 yum clean all
 yum update
 
-# Adds Group Development Tools and Other 
-yum install aspell-devel bison byacc bzip2-devel cscope ctags cvs diffstat doxygen flex httpd-devel ImageMagick freetype-devel gcc gcc-c++ gcc-gfortran gettext git gzip gmp-devel indent intltool libcurl-devel libtool libxml2-devel libicu-devel libjpeg-devel libpng-devel libtidy-devel libvpx-devel libXpm-devel libxslt-devel mysql mysql-devel mysql-server openssl-devel patch patchutils perl-GDGraph proftpd readline-devel t1lib-devel perl perl-GDGraph php php-dom php-gd php-mbstring php-mysql php-pdo php-imap php-ldap php-mcrypt rcs redhat-rpm-config rpm-build subversion swig systemtap
+# Install Apache
+yum install httpd
 
-# checks for updates
-yum clean all
-yum update
+# Start Apache
+systemctl start httpd.service
+
+# Stop Firewall
+systemctl stop firewalld
+
+# OR Disable Firewall
+systemctl disable firewalld
+
+# Adds Group Development Tools
+yum groupinstall "Development tools"
+
+# Enable SSH on boot
+systemctl start sshd
 
 # MySQL Setup
-chkconfig mysqld on
-chkconfig httpd on
-/etc/init.d/httpd start
-/etc/init.d/httpd restart
-service iptables restart
+yum install mariadb-server mariadb
+systemctl start mariadb
+mysql_secure_installation
+systemctl enable mariadb.service
+
+# Install PHP
+yum install php php-mysql
+systemctl restart httpd.service
 
 # Install Webmin
-wget http://prdownloads.sourceforge.net/webadmin/webmin-1.791-1.noarch.rpm
-rpm -U webmin-1.791-1.noarch.rpm
+nano /etc/yum.repos.d/webmin.repo
+# Paste the following content into the file:
+[Webmin]
+name=Webmin Distribution Neutral
+#baseurl=https://download.webmin.com/download/yum
+mirrorlist=https://download.webmin.com/download/yum/mirrorlist
+enabled=1
+# Ctrl + X
 
-# Install Virtualmin
+# Install Virtualmin (Optional)
 wget http://software.virtualmin.com/gpl/scripts/install.sh
 chmod +x install.sh
 ./install.sh
 
+# Install Perl
+yum install perl
+yum install perl-libwww-perl.noarch perl-LWP-Protocol-https.noarch perl-GD perl-GDGraph net-tools perl-LWP-Protocol-https gd-devel pam-devel
+
 #Install ConfigServer
-wget http://www.configserver.com/free/csf.tgz
+cd /usr/src
+rm -fv csf.tgz
+wget https://download.configserver.com/csf.tgz
 tar -xzf csf.tgz
 cd csf
 sh install.sh
-# Install the csf webmin module in:
-# Webmin > Webmin Configuration > Webmin Modules >
-# From local file > /usr/local/csf/csfwebmin.tgz > Install Module
+
+
