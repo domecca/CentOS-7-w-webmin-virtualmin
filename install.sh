@@ -2,6 +2,11 @@
 yum clean all
 yum update
 
+# CentOS GUI
+yum -y groups install "GNOME Desktop"
+echo "exec gnome-session" >> ~/.xinitrc
+systemctl set-default graphical.target
+
 # Stop Firewall
 systemctl stop firewalld
 
@@ -9,13 +14,15 @@ systemctl stop firewalld
 systemctl disable firewalld
 
 # Adds Group Development Tools, PHP, Perl, Apache
-yum groupinstall "Development tools" patch gcc httpd kernel-headers kernel-devel make perl wget php php-gd php-common php-soap php-mysql perl-libwww-perl.noarch perl-LWP-Protocol-https.noarch perl-GD perl-GDGraph net-tools perl-LWP-Protocol-https gd-devel pam-devel
+yum -y groupinstall "Development tools" patch gcc httpd kernel-headers kernel-devel make perl wget php php-gd php-common php-soap php-mysql perl-libwww-perl.noarch perl-LWP-Protocol-https.noarch perl-GD perl-GDGraph net-tools perl-LWP-Protocol-https gd-devel pam-devel
 
 # Start Apache
 systemctl start httpd.service
+systemctl enable httpd
 
 # Enable SSH on boot
 systemctl start sshd
+systemctl enable sshd
 
 # MySQL Setup
 yum install mariadb-server mariadb
