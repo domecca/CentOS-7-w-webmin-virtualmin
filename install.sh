@@ -49,13 +49,23 @@ wget http://software.virtualmin.com/gpl/scripts/install.sh
 chmod +x install.sh
 ./install.sh
 
-#Install ConfigServer
+# Install ConfigServer
 cd /usr/src
 rm -fv csf.tgz
 wget https://download.configserver.com/csf.tgz
 tar -xzf csf.tgz
 cd csf
 sh install.sh
+
+# Next, test whether you have the required iptables modules:
+
+perl /usr/local/csf/bin/csftest.pl
+
+# To install or upgrade the csf webmin module:
+# Install csf as above
+# Install the csf webmin module in:
+  # Webmin > Webmin Configuration > Webmin Modules >
+  # From local file > /usr/local/csf/csfwebmin.tgz > Install Module
 
 # Install Virtualbox
 wget http://download.virtualbox.org/virtualbox/rpm/el/virtualbox.repo -P /etc/yum.repos.d
